@@ -1,0 +1,26 @@
+{
+  "name": "mws-restaurant-stage2",
+  "version": "1.0.0",
+  "private": true,
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^4.1.0",
+    "gulp-clean-dest": "^0.2.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-htmlmin": "^4.0.0",
+    "gulp-imagemin": "^4.1.0",
+    "gulp-minify": "^2.1.0",
+    "gulp-sass": "^3.1.0",
+    "gulp-sourcemaps": "^2.6.4",
+    "gulp.spritesmith": "^6.9.0",
+    "idb": "^2.0.4",
+    "imagemin-mozjpeg": "^7.0.0",
+    "imagemin-pngquant": "^5.0.1"
+  },
+  "dependencies": {},
+  "description": "---\r #### _Three Stage Course Material Project - Restaurant Reviews_",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

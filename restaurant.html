@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#252831"> 
+  <link rel="manifest" href="/manifest.json">
+  <link  rel="stylesheet" href="css/restaurant.css" type="text/css">
+  <title>Restaurant Info</title>
+</head>
+<body class="inside">
+ <header>
+  <nav>
+      <h1>
+        <a href="/">Restaurant Reviews</a>
+      </h1>
+    </nav>
+  <ul id="breadcrumb" role="navigation" aria-label="Breadcrumb">
+      <li>
+        <a href="/">Home</a>
+      </li>
+    </ul>
+  </header>
+ <main id="maincontent">
+      <section id="map-container">
+        <div id="map" role="application" aria-label="Google map"></div>
+      </section>
+      <section class="flex-container">
+      <section id="restaurant-container">
+        <h2 id="restaurant-name"></h2>
+        <img id="restaurant-img">
+        <p id="restaurant-cuisine"></p>
+        <p id="restaurant-address"></p>
+        <table id="restaurant-hours"></table>
+      </section>
+      <section id="reviews-container">
+      </section>
+      <footer id="footer">
+        Copyright (c) 2017
+        <a href="/">
+          <strong>Restaurant Reviews</strong>
+        </a> All Rights Reserved.
+      </footer>
+    </section>
+  </main>
+  <div class="modal"></div>
+  <div class="modal-overlay"></div>
+  <script async defer  type="text/javascript" src="js/restaurant.js" onload="initHtml()" ></script>
+ <script async defer  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBvmkRMVFKow3c86rlP6mo3jZNWb2X2dzA&callback=initMap&v=3.31"></script>
+ </body>
+</html>
