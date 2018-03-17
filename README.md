@@ -2,9 +2,11 @@
 ---
 #### _Three Stage Course Material Project - Restaurant Reviews_ (Udacity and Google)
 
-## Project Overview: Stage 2
+## Project Overview: Stage 3
 
-1. this project use backend server for data queries that is included in this folder so make sure you run it.
+1. this project use backend server for data queries you can find it here :
+    https://github.com/xakiin6/mws-restaurant-stage-3
+ so make sure you run it.
 
 ### To install the project dependuncies.
 2. npm install
