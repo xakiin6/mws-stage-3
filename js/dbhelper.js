@@ -37,7 +37,8 @@ class DBHelper {
       url= `${DBHelper.host()}/restaurants/${parameter}/?is_favorite=true`;
       break;
       case 7:
-      url= `${DBHelper.host()}/restaurants/${parameter}/?is_favorite=false`
+      url= `${DBHelper.host()}/restaurants/${parameter}/?is_favorite=false`;
+      break;
       default:
       url= DBHelper.host();
     }
@@ -49,7 +50,6 @@ class DBHelper {
    * Fetch a restaurant by its ID.
    */
   static fetchRestaurantById(id) {
-    console.log(DBHelper.endPoints().RESTAURANTS_BY_ID);
    return fetch(DBHelper.DATABASE_URL(DBHelper.endPoints().RESTAURANTS_BY_ID,id))
       .then(function (response) {
         if(response.ok) {
@@ -60,7 +60,18 @@ class DBHelper {
       });
 }
 
-
+static markAsFavorite(restaurant) {
+  var mark =(restaurant.is_favorite ==='true'?this.endPoints().MARK_FAVOURATES:this.endPoints().UNMARK_FAVOURATES);
+  console.log(mark);
+  return fetch(DBHelper.DATABASE_URL(mark,restaurant.id),{method:'PUT',body:restaurant})
+     .then(function (response) {
+       if(response.ok) {
+       return response.json();
+       } else {
+         return [{}];
+       }
+     });
+    }
 static postReviews(review) {
   return fetch(DBHelper.DATABASE_URL(this.endPoints().POST_REVIEWS,null),{method:'post',body:review})
      .then(function (response) {
@@ -136,4 +147,25 @@ static postReviews(review) {
     if (iframe) {
       iframe.setAttribute('title', 'Google Maps');
     }
+
+window.addEventListener('online',(event)=>{
+  event.preventDefault();
+  displayToast(event.type);
+});
+window.addEventListener('offline',(event)=>{
+  event.preventDefault();
+  displayToast(event.type);
+});   
+
+function displayToast(type) {
+  var message ='<span>Unable to connect. Retrying…</span>',isVisible ='none';
+  if(type==='online') {
+    isVisible ='none';
+  } else {
+    isVisible ='block';
+  }
+  var toast = document.querySelector('#toast');
+  toast.innerHTML = message;
+  toast.style.display =isVisible;
+}
   });

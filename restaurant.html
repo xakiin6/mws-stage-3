@@ -23,7 +23,9 @@
   </header>
  <main id="maincontent">
       <section id="map-container">
-        <div id="map" role="application" aria-label="Google map"></div>
+        <div id="map" role="application" aria-label="Google map">
+        </div>
+        <img tabindex="0" role="application"  aria-label="Google map, click to active interactive map" class="static_map" />
       </section>
       <section class="flex-container">
       <section id="restaurant-container">
@@ -43,9 +45,10 @@
       </footer>
     </section>
   </main>
-  <div class="modal"></div>
+  <div role="dialog" aria-modal="true" class="modal"></div>
   <div class="modal-overlay"></div>
-  <script async defer  type="text/javascript" src="js/restaurant.js" onload="initHtml()" ></script>
- <script async defer  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBvmkRMVFKow3c86rlP6mo3jZNWb2X2dzA&callback=initMap&v=3.31"></script>
+  <div id="toast"></div>
+  <script async defer  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBvmkRMVFKow3c86rlP6mo3jZNWb2X2dzA"></script>
+  <script defer  type="text/javascript" src="js/restaurant-min.js" onload="initHtml()" ></script>
  </body>
 </html>

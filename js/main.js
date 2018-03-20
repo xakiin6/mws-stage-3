@@ -5,42 +5,7 @@ let restaurants,allRestaurants,
 var map,myWorker;
 var markers = [];
 let ul,neighborhoods_select,cuisines_select;
-let observer;
-document.addEventListener('DOMContentLoaded',()=>{
-//myInit();
-},false);
-
-function StartImageObserver(){
-  const images = document.querySelectorAll('#restaurants-list li');
-const config = {
-  // If the image gets within 50px in the Y axis, start the download.
-  rootMargin: '50px 0px',
-  threshold: 0.01
-};
-  if (!('IntersectionObserver' in window)) {
-    Array.from(images).forEach(image => populateImages(image));
-  } else {
-    // It is supported, load the images
-    observer = new IntersectionObserver(onIntersection, config);
-    images.forEach(image => observer.observe(image));
-  }
-}
-function onIntersection(entries) {
-  // Loop through the entries
-  entries.forEach(entry => {
-    // Are we in viewport?
-    if (entry.intersectionRatio > 0) {
-    // Stop watching and load the image
-      observer.unobserve(entry.target);
-      populateImages(entry.target);
-      
-    }
-  });
-}
-
-function populateImages(image) {
-  image.insertAdjacentHTML('afterbegin',image.dataset.image);
-}
+let isMobileMap=false,isDesktopMap=false;
 function myInit() {
   neighborhoods_select = document.getElementById('neighborhoods-select');
   cuisines_select = document.getElementById('cuisines-select');
@@ -70,6 +35,33 @@ function myInit() {
   });
   }
 }
+let observer;
+observeImages =()=>{
+const images = document.querySelectorAll('#restaurants-list li img[data-src]');
+const config = {
+  rootMargin: '50px 0px',
+  threshold: 0.01
+};
+if ('IntersectionObserver' in window) {
+  observer = new IntersectionObserver(onChange, config);
+  images.forEach(img => observer.observe(img));
+} else {
+  images.forEach(image => loadImage(image));
+}
+}
+const loadImage = image => {
+  image.src = image.dataset.src;
+}
+
+function onChange(changes, observer) {
+  changes.forEach(change => {
+    if (change.intersectionRatio > 0) {
+      // Stop watching and load the image
+      loadImage(change.target);
+      observer.unobserve(change.target);
+    }
+  });
+}
 fetchNeighborhoods = (res) => {
     self.neighborhoods= res;
     fillNeighborhoodsHTML();
@@ -83,25 +75,72 @@ fetchCuisines = (cuisines) => {
   self.cuisines = cuisines;
   fillCuisinesHTML();
   updateRestaurants();
+  self.startMaps();
 }
 fillCuisinesHTML = (cuisines = self.cuisines) => {
   cuisines.forEach(cuisine => {
     cuisines_select.insertAdjacentHTML('beforeend',`<option value="${cuisine}">${cuisine}</option>`);
   });
 }
-window.initMap = () => {
-   let loc = {
+window.addEventListener('resize',()=>{
+  self.startMaps();
+});
+window.startMaps=()=>{
+  if(window.innerWidth < 464) {
+    var mapdiv =document.getElementById('map');
+  mapdiv.style.display ='none';
+  self.isDesktopMap =false;  
+  self.InitMobileMap();
+    
+      
+    } else {
+      
+      var mapImage = document.querySelector('.static_map');
+      mapImage.style.display ='none';
+      self.isMobileMap =false;
+      self.initDesktopMap();
+    }
+}
+
+window.InitMobileMap=() => {
+  var mapImage = document.querySelector('.static_map');
+  mapImage.style.display ='block'; 
+  if(self.isMobileMap===true) {
+    return;
+  }
+  self.isMobileMap =true;
+  self.isDesktopMap =false;
+  
+  var maplocations =addMarkersToMobileMap(true);
+  mapImage.setAttribute('src',`https://maps.googleapis.com/maps/api/staticmap?center=40.722216,-73.987501&markers=size:large|color:red|${maplocations}&zoom=12&size=458x400&maptype=roadmap&key=AIzaSyAsggoUe5zy3jLXhAo-kYQ8xmgpTi377Ec`);
+  mapImage.addEventListener('click',function(e){
+    e.preventDefault(); 
+    mapImage.style.display ='none'; 
+    self.initDesktopMap();
+  
+  });
+
+}
+
+window.initDesktopMap = () => {
+  var mapdiv =document.getElementById('map');
+  mapdiv.style.display ='block';
+  if(self.isDesktopMap===true) {
+    return;
+  }
+  let loc = {
     lat: 40.722216,
     lng: -73.987501
   };
   
-  self.map = new google.maps.Map(document.getElementById('map'), {
+  self.map = new google.maps.Map(mapdiv, {
     zoom: 12,
     center: loc,
     scrollwheel: false
   });
-
-  //addMarkersToMap();
+   self.isDesktopMap=true;
+   
+  addMarkersToMap();
 }
 updateRestaurants = () => {
   const cIndex = cuisines_select.selectedIndex;
@@ -126,16 +165,27 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
     ul.innerHTML = `<li style="width:100% !important"><p>No restaurants found!</p></li>`;
     return;
   }
-  restaurants.forEach(restaurant => {ul.append(createRestaurantHTML(restaurant));});
-  if(self.map){addMarkersToMap();}
-//StartImageObserver();
+  var ul_temp = renderHtml('ul',null);
+  restaurants.forEach(restaurant => {ul_temp.append(createRestaurantHTML(restaurant));});
+  ul.innerHTML=ul_temp.innerHTML;
+  if(window.innerWidth < 464) {
+    
+      addMarkersToMobileMap(false);
+  }
+    else {
+   if(self.map) {addMarkersToMap();}
+  
+  }
+   observeImages();
+ 
 }
 createRestaurantHTML = (restaurant) => {
   const li = renderHtml('li', null);
-  //src="${restaurant.photograph}.jpg"
-  const image =`<img class="restaurant-img" alt="${restaurant.name} restaurant" src="img/${restaurant.photograph||'10'}.jpg">`; 
+  const image =`<img class="restaurant-img" alt="${restaurant.name} restaurant" data-src="img/${restaurant.photograph||'10'}.jpg">`; 
   li.innerHTML=image;
-  renderHtml('h2', restaurant.name,li);
+  var title =renderHtml('h2', restaurant.name,li);
+  if(restaurant.is_favorite==='true')
+      title.innerHTML+=' <span class="favorite"></span>';
   renderHtml('p', restaurant.neighborhood,li);
   renderHtml('p', restaurant.address,li);
   const more = renderHtml('a', 'View Details');
@@ -145,6 +195,23 @@ createRestaurantHTML = (restaurant) => {
 
   return li;
 }
+
+addMarkersToMobileMap = (firstRun,restaurants = self.restaurants) => {
+  if(restaurants) {
+    let MobileMarkers ='';
+  restaurants.forEach(restaurant => {
+    // Add marker to the map
+    MobileMarkers += `${restaurant.latlng.lat},${restaurant.latlng.lng}|`;
+    });
+   if(firstRun===false) {
+    var mapImage = document.querySelector('.static_map');
+    mapImage.style.display ='block'; 
+    mapImage.src=`https://maps.googleapis.com/maps/api/staticmap?center=40.722216,-73.987501&markers=size:large|color:red|${MobileMarkers}&zoom=12&size=458x400&maptype=roadmap&key=AIzaSyAsggoUe5zy3jLXhAo-kYQ8xmgpTi377Ec`;
+   } 
+  return MobileMarkers;
+}
+}
+
 addMarkersToMap = (restaurants = self.restaurants) => {
   if(restaurants) {
   restaurants.forEach(restaurant => {

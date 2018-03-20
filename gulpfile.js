@@ -7,7 +7,6 @@ const cleanDest = require('gulp-clean-dest');
 const minifyjs = require('gulp-minify');
 const minifyHtml = require('gulp-htmlmin');
 const concat = require('gulp-concat');
-const spritesmith = require('gulp.spritesmith');
 const imageminMozjpeg = require('imagemin-mozjpeg');
 
 gulp.task('default', ['copy-html', 'copy-images', 'copy-libs', 'copy-styles', 'copy-index-scripts','copy-restaurant-scripts','copy-manifest'
@@ -42,9 +41,9 @@ gulp.task('copy-worker', function () {
 
 gulp.task('copy-restaurant-scripts', function () {
 	gulp.src(['js/dbhelper.js','js/restaurant_info.js'])
-		.pipe(minifyjs({ noSource: true }))
-		.pipe(concat('restaurant.js'))
-		.pipe(gulp.dest('dist/js'));
+	.pipe(concat('restaurant.js'))	
+	.pipe(minifyjs({ noSource: true }))
+	.pipe(gulp.dest('dist/js'));
 });
 
 gulp.task('copy-html', function () {
@@ -64,17 +63,10 @@ gulp.task('copy-libs', function () {
 gulp.task('copy-images', function () {
 	gulp.src('img/*')
 		.pipe(imagemin([imageminMozjpeg({
-			quality: 5,
+			quality: 22,
 		})],{verbose:true}))
 		.pipe(gulp.dest('dist/img'))
 });
-gulp.task('sprite', function () {
-	var spriteData = gulp.src('imgSmall/*.jpg').pipe(spritesmith({
-	  imgName: 'sprite.jpg',
-	  cssName: 'sprite.css'
-	}));
-	return spriteData.pipe(gulp.dest('img/'));
-  });
 gulp.task('copy-styles', function () {
 	gulp.src('sass/**')
 		.pipe(cleanDest('dist/css'))
